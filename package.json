@@ -1,0 +1,16 @@
+{
+  "name": "sc-slot-board-statistic",
+  "version": "1.0.0",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "ramda": "^0.28.0",
+    "sc-cascading-slot-base": "1.0.2-beta.32",
+    "sc-slot-board-generator": "0.0.2-beta.8"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.38",
+    "@types/ramda": "^0.28.13",
+    "ts-node": "^10.8.0",
+    "typescript": "^4.7.2"
+  }
+}
