@@ -160,7 +160,9 @@ export const countSymbols = (statistics: Statistic[]): Record<number, Record<num
           result[symbol] = range(1, 31).map(() => 0);
         }
 
-        result[symbol][numberOfSymbols - 1] += statistic.symbols.counts[symbol][numberOfSymbols] || 0;
+        const count = (statistic.symbols.counts[symbol] && statistic.symbols.counts[symbol][numberOfSymbols]) || 0;
+
+        result[symbol][numberOfSymbols - 1] += count;
       });
     });
   });
