@@ -126,8 +126,8 @@ const multiplier = Number(process.argv[3] || 1);
 const batchSize = Number(process.argv[4] || 1000);
 const times = Number(process.argv[5] || 50);
 const singleFactor = process.argv[6] === "true";
-const betCoins = [0.01, 0.05, 0.1, 0.5];
-const betLevels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const betCoins = [0.5];
+const betLevels = [10];
 
 !existsSync("reports") && mkdirSync("reports");
 generateReport(factor, multiplier, batchSize, times, betCoins, betLevels, singleFactor);

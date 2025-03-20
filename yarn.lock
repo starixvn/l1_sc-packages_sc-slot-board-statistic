@@ -1861,6 +1861,11 @@ sc-common@1.8.1:
     mongoose-long "^0.3.0"
     numeral "^2.0.6"
 
+sc-core-rng@1.0.3-beta.5:
+  version "1.0.3-beta.5"
+  resolved "http://npm.lumigame.com/sc-core-rng/-/sc-core-rng-1.0.3-beta.5.tgz#a658b5eaec6ddfe0434c69371ec95b4ad13b5f6d"
+  integrity sha512-YJszQfMdU7XLAnXn/dfiKT9wJYgUFomu0WNFeawf2sxoMIt08o4d4rG4Q5lrmSB7MJ4WJh4SEgTCr5EjdeLhLw==
+
 sc-game-base@3.0.2-beta.1:
   version "3.0.2-beta.1"
   resolved "http://npm.lumigame.com/sc-game-base/-/sc-game-base-3.0.2-beta.1.tgz#a154bc60b0e12cf2ed56e3e3460b5f57d425fd7a"
@@ -1885,14 +1890,6 @@ sc-game-base@3.0.2-beta.1:
     socket.io-msgpack-parser "^3.0.1"
     socket.io-prom-metrics "^1.0.3"
 
-sc-slot-board-generator@0.0.2-beta.11:
-  version "0.0.2-beta.11"
-  resolved "http://npm.lumigame.com/sc-slot-board-generator/-/sc-slot-board-generator-0.0.2-beta.11.tgz#95d7f317ecc8644c3bdb49d0058ca700e6e81918"
-  integrity sha512-5+YqIX95XrCD7VQqAPhoHyfi+jz74HDHOSuIAcyvl4MkNBiTLxqybU2iydhA3j/yQa/fpJXT9UVTypf0xnGqrA==
-  dependencies:
-    chance "^1.1.7"
-    ramda "^0.28.0"
-
 sc-slot-board-generator@0.0.2-beta.13:
   version "0.0.2-beta.13"
   resolved "http://npm.lumigame.com/sc-slot-board-generator/-/sc-slot-board-generator-0.0.2-beta.13.tgz#d8a4bc4ba58ba6f4a8ef6fa960e75ac22399f817"
@@ -1900,6 +1897,14 @@ sc-slot-board-generator@0.0.2-beta.13:
   dependencies:
     chance "^1.1.7"
     ramda "^0.28.0"
+
+sc-slot-board-generator@1.0.2-beta.7:
+  version "1.0.2-beta.7"
+  resolved "http://npm.lumigame.com/sc-slot-board-generator/-/sc-slot-board-generator-1.0.2-beta.7.tgz#4a744356d96be8b54ba5c328295b2d8acc2a45ed"
+  integrity sha512-y7S2NbhxT1b36rwtX/xPk3t2UObMSrACajhCvrqfdyqmvMnl8oGl0socYSt9ecL8v+3IvQavouLao5WUxDqn0g==
+  dependencies:
+    ramda "^0.28.0"
+    sc-core-rng "1.0.3-beta.5"
 
 sc-slot-game-base@1.4.3-beta.3:
   version "1.4.3-beta.3"
