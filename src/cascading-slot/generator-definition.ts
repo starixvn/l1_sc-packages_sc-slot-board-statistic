@@ -145,14 +145,22 @@ export const defaultOdds = {
         { from: 12, to: 30, odds: 1000 },
       ],
     },
+    {
+      symbol: 9,
+      payout: [
+        { from: 4, to: 4, odds: 60 },
+        { from: 5, to: 5, odds: 100 },
+        { from: 6, to: 6, odds: 2000 },
+      ],
+    },
   ],
   freeSpins: {
     symbol: 9,
     initialOdds: [
-      { count: 4, odds: 3 },
-      { count: 5, odds: 6 },
-      { count: 6, odds: 18 },
+      { count: 4, odds: 15 },
+      { count: 5, odds: 15 },
+      { count: 6, odds: 15 },
     ],
-    additionalOdds: [{ count: 4, odds: 5 }],
+    additionalOdds: [{ count: 3, odds: 5 }],
   },
 };

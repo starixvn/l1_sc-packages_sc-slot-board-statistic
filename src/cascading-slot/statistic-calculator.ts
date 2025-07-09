@@ -36,8 +36,10 @@ export interface Statistic {
   totalMultipliers: number;
   rtp: number;
   winFreeSpins: number;
-
   multipliers: Record<number, number>;
+  maxWin: number;
+  hitMaxWin: number;
+  aboveThousandWins: number;
 
   round: {
     maximumTumbles: number;
@@ -56,6 +58,8 @@ export interface Statistic {
 export const calculateCommonProperties =
   (round: Round) =>
   (statistic: Statistic): Statistic => {
+    const betAmount = round.betLevel * round.coinValue * round.betMultiplier;
+
     statistic.totalRounds += 1;
     statistic.winingRounds += round.betwin > 0 ? 1 : 0;
     statistic.totalBetAmount += round.totalAmount;
@@ -65,7 +69,10 @@ export const calculateCommonProperties =
     statistic.totalAdditionFreeSpins += round.freeSpin ? round.settlementResult.freeSpins.odds : 0;
     statistic.rtp = statistic.totalPayout / (statistic.totalBetAmount || 1);
     statistic.totalMultipliers += compose(length, prop("multipliers") as any, last)(round.settlementResult.tumbles);
-    statistic.winFreeSpins += round.settlementResult.freeSpins.odds ? 1 : 0;
+    statistic.winFreeSpins += !round.freeSpin && round.settlementResult.freeSpins.odds ? 1 : 0;
+    statistic.maxWin = max(statistic.maxWin, round.betwin / betAmount);
+    statistic.hitMaxWin += round.betwin / betAmount === statistic.maxWin ? 1 : 0;
+    statistic.aboveThousandWins += round.betwin / betAmount > 1000 ? 1 : 0;
 
     return statistic;
   };
@@ -148,6 +155,9 @@ export const calculateRTP = (statistics: Statistic[], rounds: number) => ({
   multiplierRatio: mean(getPercents(["totalMultipliers"], statistics, rounds)),
   freeSpinsRatio: mean(getPercents(["winFreeSpins"], statistics, rounds)),
   tumbleWinRatio: mean(getPercents(["winingRounds"], statistics, rounds)),
+  maxWin: Math.max(...getValues(["maxWin"], statistics)),
+  hitMaxWin: mean(getPercents(["hitMaxWin"], statistics, rounds)),
+  aboveThousandWins: mean(getPercents(["aboveThousandWins"], statistics, rounds)),
 });
 
 export const countSymbols = (statistics: Statistic[]): Record<number, Record<number, number>> => {

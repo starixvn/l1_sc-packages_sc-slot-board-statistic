@@ -22,23 +22,22 @@ function getSymbolHeuristic(multiplierSymbols: number) {
 }
 
 function getNumberOfSymbols(factor: number, multiplierSymbols: number) {
-  const symbolHeuristic = getSymbolHeuristic(multiplierSymbols);
-  const multiplier = { 10: symbolHeuristic[10] };
-  const scatter = { 9: Math.round(factor * symbolHeuristic[9]) };
-  const normalSymbols = range(0, 9)
-    .reverse()
-    .reduce((result, symbol) => {
-      if (symbol === 8) {
-        result[symbol] = factor * symbolHeuristic[symbol];
-      } else {
-        result[symbol] = Math.round(symbolHeuristic[symbol] * result[symbol + 1]);
-      }
-
-      return result;
-    }, {} as Record<number, number>);
-
-  return Object.assign({}, normalSymbols, scatter, multiplier);
+  return {
+    0: 0.17,
+    1: 0.15,
+    2: 0.146,
+    3: 0.124,
+    4: 0.11,
+    5: 0.09,
+    6: 0.07,
+    7: 0.06,
+    8: 0.05,
+    9: 0.02, // scatter
+    10: 0.01, // multiplier
+  };
 }
+
+let count = 1;
 
 function getRunnerOptions(
   factor: number,
@@ -95,7 +94,8 @@ function generateReport(
   times: number = 2,
   betCoins = [0.1],
   betLevels = [5],
-  singleFactor: boolean = false
+  singleFactor: boolean = false,
+  runner: number = 1
 ) {
   console.log({ maximumFactor, multiplierSymbols, batchSize, times });
   const result = [];
@@ -112,22 +112,22 @@ function generateReport(
 
       console.log(data.report, data.configs);
 
-      writeFileSync(`reports/report-${batchSize}-${times}-${maximumFactor}-${multiplierSymbols}.json`, JSON.stringify(result, null, 2));
+      writeFileSync(`reports/report-${runner}-${batchSize}-${times}-${maximumFactor}-${multiplierSymbols}.json`, JSON.stringify(result, null, 2));
     }
   }
 
-  writeFileSync(`reports/report-${batchSize}-${times}-${maximumFactor}-${multiplierSymbols}.json`, JSON.stringify(result, null, 2));
+  writeFileSync(`reports/report-${runner}-${count++}.json`, JSON.stringify(result, null, 2));
 
   return result;
 }
 
 const factor = Number(process.argv[2] || 40);
 const multiplier = Number(process.argv[3] || 1);
-const batchSize = Number(process.argv[4] || 1000);
-const times = Number(process.argv[5] || 50);
+const batchSize = Number(process.argv[4] || 1000000);
+const times = Number(process.argv[5] || 1);
 const singleFactor = process.argv[6] === "true";
-const betCoins = [0.01, 0.05, 0.1, 0.5];
-const betLevels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const betCoins = [0.01];
+const betLevels = [1];
 
 !existsSync("reports") && mkdirSync("reports");
-generateReport(factor, multiplier, batchSize, times, betCoins, betLevels, singleFactor);
+generateReport(factor, multiplier, batchSize, times, betCoins, betLevels, true, Number(process.argv[2] || 1));

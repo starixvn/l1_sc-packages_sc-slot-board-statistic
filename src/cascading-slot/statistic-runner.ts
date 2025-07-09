@@ -107,6 +107,9 @@ export function spinABatch(options: BatchOptions) {
     cache: {
       freeSpins: {},
     },
+    maxWin: 0,
+    hitMaxWin: 0,
+    aboveThousandWins: 0,
   };
   const betMultiplier = 20;
 
