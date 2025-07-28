@@ -25,15 +25,15 @@ function getNumberOfSymbols(factor: number, multiplierSymbols: number) {
   return {
     0: 0.17,
     1: 0.15,
-    2: 0.146,
-    3: 0.124,
-    4: 0.11,
+    2: 0.14,
+    3: 0.125,
+    4: 0.115,
     5: 0.09,
     6: 0.07,
     7: 0.06,
     8: 0.05,
-    9: 0.02, // scatter
-    10: 0.01, // multiplier
+    9: 0.02,
+    10: 0.01,
   };
 }
 
@@ -123,11 +123,11 @@ function generateReport(
 
 const factor = Number(process.argv[2] || 40);
 const multiplier = Number(process.argv[3] || 1);
-const batchSize = Number(process.argv[4] || 1000000);
-const times = Number(process.argv[5] || 1);
+const batchSize = Number(process.argv[4] || 1000);
+const times = Number(process.argv[5] || 50);
 const singleFactor = process.argv[6] === "true";
-const betCoins = [0.01];
-const betLevels = [1];
+const betCoins = [0.01, 0.05, 0.1, 0.5];
+const betLevels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 !existsSync("reports") && mkdirSync("reports");
 generateReport(factor, multiplier, batchSize, times, betCoins, betLevels, true, Number(process.argv[2] || 1));

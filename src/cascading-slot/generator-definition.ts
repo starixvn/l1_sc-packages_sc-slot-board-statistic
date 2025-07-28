@@ -4,7 +4,7 @@ export const commonDefinition = {
   multiplier: {
     symbol: 10,
     min: 2,
-    max: 21,
+    max: 500,
   },
   boardSettings: {
     reels: 6,
@@ -150,7 +150,7 @@ export const defaultOdds = {
       payout: [
         { from: 4, to: 4, odds: 60 },
         { from: 5, to: 5, odds: 100 },
-        { from: 6, to: 6, odds: 2000 },
+        { from: 6, to: 30, odds: 2000 },
       ],
     },
   ],

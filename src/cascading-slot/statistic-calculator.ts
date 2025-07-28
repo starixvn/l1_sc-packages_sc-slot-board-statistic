@@ -60,6 +60,11 @@ export const calculateCommonProperties =
   (statistic: Statistic): Statistic => {
     const betAmount = round.betLevel * round.coinValue * round.betMultiplier;
 
+    if (statistic.maxWin < round.betwin / betAmount) {
+      statistic.maxWin = round.betwin / betAmount;
+      statistic.hitMaxWin = 0;
+    }
+
     statistic.totalRounds += 1;
     statistic.winingRounds += round.betwin > 0 ? 1 : 0;
     statistic.totalBetAmount += round.totalAmount;
@@ -151,6 +156,7 @@ export const getPercents = (properties: string[], statistics: Statistic[], size:
 
 export const calculateRTP = (statistics: Statistic[], rounds: number) => ({
   rtp: mean(getValues(["rtp"], statistics)),
+  rtps: getValues(["rtp"], statistics),
   rtpDeviation: Math.sqrt(variance(getValues(["rtp"], statistics))),
   multiplierRatio: mean(getPercents(["totalMultipliers"], statistics, rounds)),
   freeSpinsRatio: mean(getPercents(["winFreeSpins"], statistics, rounds)),
