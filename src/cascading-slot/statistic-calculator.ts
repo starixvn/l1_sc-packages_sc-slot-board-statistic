@@ -12,6 +12,7 @@ export interface Round {
   multiplier?: number;
   odds?: any;
   totalTumbleWin?: number;
+  buyFreeSpins?: boolean;
   settlementResult?: {
     tumbles: {
       icons: Record<string, { count: number; odds: number }>;

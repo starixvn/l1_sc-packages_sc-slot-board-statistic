@@ -5,6 +5,7 @@ import { BoardGenerator } from "sc-slot-board-generator";
 import { calculateStatistic, Round, Statistic } from "./statistic-calculator";
 import { Chance } from "chance";
 import { defaultOdds, commonDefinition } from "./generator-definition";
+import defaultDefinition from "../../lib/default-definition";
 
 export interface BatchOptions {
   numberOfRounds: number;
@@ -23,10 +24,17 @@ export interface GetStatisticOptions {
   batchOptions: BatchOptions;
 }
 
-const maxWinPerRound = 5000;
+const buyFreeSpinSymbols = [0, 1, 2, 3, 4, 5, 6, 7, 8].flatMap((symbol) => Array(7).fill(symbol));
+const getBuyFreeSpinBoard = () => {
+  const chance = new Chance();
+
+  return [{ newBoard: chance.shuffle(chance.pickset(buyFreeSpinSymbols, 26).concat([9, 9, 9, 9])), multipliers: [] }];
+};
 
 function spin(calculator: RoundCalculator, statistic: Statistic, round: Round, totalMultiplier = 0) {
-  calculator.processSpinning(round, totalMultiplier, round.betLevel * round.coinValue * round.betMultiplier * maxWinPerRound);
+  const buyFreeSpinBoard = round.buyFreeSpins && !round.freeSpin ? getBuyFreeSpinBoard() : undefined;
+
+  calculator.processSpinning(round, totalMultiplier, Number.MAX_VALUE, buyFreeSpinBoard);
 
   calculateStatistic(round)(statistic);
 
@@ -112,7 +120,6 @@ export function spinABatch(options: BatchOptions) {
     maxWin: 0,
     hitMaxWin: 0,
     aboveThousandWins: 0,
-    winRange: {},
   };
   const betMultiplier = 20;
 
@@ -124,8 +131,9 @@ export function spinABatch(options: BatchOptions) {
       coinValue: options.coinValue,
       betLevel: options.betLevel,
       betMultiplier,
-      totalAmount: options.coinValue * options.betLevel * betMultiplier,
+      totalAmount: options.coinValue * options.betLevel * betMultiplier * 50,
       odds,
+      buyFreeSpins: true,
     };
 
     spin(calculator, statistic, round, 0);
@@ -137,7 +145,14 @@ export function spinABatch(options: BatchOptions) {
     if (freeSpins) {
       options.debug && console.log(`You won free spins: ${freeSpins}`);
 
-      executeFreeSpins(calculator, statistic, round, 0, freeSpins, options.debug);
+      executeFreeSpins(
+        calculator,
+        statistic,
+        { ...round, totalAmount: options.coinValue * options.betLevel * betMultiplier, buyFreeSpins: false },
+        0,
+        freeSpins,
+        options.debug
+      );
     }
   }
 
