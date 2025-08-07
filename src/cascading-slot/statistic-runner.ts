@@ -15,6 +15,7 @@ export interface BatchOptions {
   multiplierSettings: any;
   modeSettings: any;
   difficulty: any;
+  betAmounts: { coinValue: number; betLevel: number }[];
 }
 
 export interface GetStatisticOptions {
@@ -125,13 +126,15 @@ export function spinABatch(options: BatchOptions) {
 
   for (let i = 0; i < options.numberOfRounds; i++) {
     options.debug && console.log(`Running ${i}/${options.numberOfRounds - 1}`);
+    const chance = new Chance();
+    const { coinValue, betLevel } = chance.pickone(options.betAmounts);
 
     const round: Round = {
       id: i,
-      coinValue: options.coinValue,
-      betLevel: options.betLevel,
+      coinValue,
+      betLevel,
       betMultiplier,
-      totalAmount: options.coinValue * options.betLevel * betMultiplier * 50,
+      totalAmount: coinValue * betLevel * betMultiplier * 50,
       odds,
       buyFreeSpins: true,
     };
@@ -145,14 +148,7 @@ export function spinABatch(options: BatchOptions) {
     if (freeSpins) {
       options.debug && console.log(`You won free spins: ${freeSpins}`);
 
-      executeFreeSpins(
-        calculator,
-        statistic,
-        { ...round, totalAmount: options.coinValue * options.betLevel * betMultiplier, buyFreeSpins: false },
-        0,
-        freeSpins,
-        options.debug
-      );
+      executeFreeSpins(calculator, statistic, { ...round, totalAmount: 0, buyFreeSpins: false }, 0, freeSpins, options.debug);
     }
   }
 
@@ -163,12 +159,9 @@ export function getStatistics(options: GetStatisticOptions) {
   const statistics: Statistic[] = [];
   const allRounds: Round[][] = [];
   const betAmounts = options.coinValues.flatMap((coinValue) => options.betLevels.map((betLevel) => ({ betLevel, coinValue })));
-  const chance = new Chance();
 
   for (let i = 0; i < options.times; i++) {
-    const betAmount = chance.pickone(betAmounts);
-
-    const { statistic, rounds } = spinABatch(Object.assign({}, options.batchOptions, betAmount));
+    const { statistic, rounds } = spinABatch(Object.assign({}, options.batchOptions, betAmounts));
 
     statistics.push(statistic);
     allRounds.push(rounds);

@@ -65,6 +65,7 @@ function getRunnerOptions(
         },
       },
       numberOfRounds: batchSize,
+      betAmounts: coinValues.flatMap((coinValue) => betLevels.map((betLevel) => ({ coinValue, betLevel }))),
     },
   };
 }
@@ -83,17 +84,8 @@ function generateReportWithSingleFactor(
   const symbols = countSymbols(statistics);
   const configs = range(0, 11).map((symbol) => options.batchOptions.modeSettings.mode[Difficulty.Easy][symbol]);
   const multipliers = countMultipliers(statistics);
-  const winRanges = statistics.reduce((summedRanges, statistic) => {
-    Object.entries(statistic.winRange).forEach(([range, count]) => {
-      const rangeKey = parseInt(range);
-      summedRanges[rangeKey] = (summedRanges[rangeKey] || 0) + count;
-    });
-    return summedRanges;
-  }, {} as Record<number, number>);
 
-  const winRangesCSV = formatWinRangesToCSV(winRanges);
-
-  return { report, symbols, configs, multipliers, winRanges, winRangesCSV };
+  return { report, symbols, configs, multipliers };
 }
 
 function generateReport(
@@ -130,19 +122,10 @@ function generateReport(
   return result;
 }
 
-const formatWinRangesToCSV = (winRanges: Record<number, number>): string => {
-  const csvHeader = "Win Range,Count\n";
-  const csvRows = Object.entries(winRanges)
-    .sort(([a], [b]) => parseInt(a) - parseInt(b))
-    .map(([range, count]) => `${range},${count}`)
-    .join("\n");
-  return csvHeader + csvRows;
-};
-
 const factor = Number(process.argv[2] || 40);
 const multiplier = Number(process.argv[3] || 1);
-const batchSize = Number(process.argv[4] || 50000);
-const times = Number(process.argv[5] || 20);
+const batchSize = Number(process.argv[4] || 3000);
+const times = Number(process.argv[5] || 10);
 const singleFactor = process.argv[6] === "true";
 const betCoins = [0.01, 0.05, 0.1, 0.5];
 const betLevels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
