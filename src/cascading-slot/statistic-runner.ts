@@ -23,8 +23,10 @@ export interface GetStatisticOptions {
   batchOptions: BatchOptions;
 }
 
+const maxWinPerRound = 5000;
+
 function spin(calculator: RoundCalculator, statistic: Statistic, round: Round, totalMultiplier = 0) {
-  calculator.processSpinning(round, totalMultiplier);
+  calculator.processSpinning(round, totalMultiplier, round.betLevel * round.coinValue * round.betMultiplier * maxWinPerRound);
 
   calculateStatistic(round)(statistic);
 
@@ -110,6 +112,7 @@ export function spinABatch(options: BatchOptions) {
     maxWin: 0,
     hitMaxWin: 0,
     aboveThousandWins: 0,
+    winRange: {},
   };
   const betMultiplier = 20;
 

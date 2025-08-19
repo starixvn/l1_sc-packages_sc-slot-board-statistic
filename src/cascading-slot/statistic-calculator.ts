@@ -41,6 +41,8 @@ export interface Statistic {
   hitMaxWin: number;
   aboveThousandWins: number;
 
+  winRange: Record<number, number>;
+
   round: {
     maximumTumbles: number;
     maximumPayout: number;
@@ -103,6 +105,14 @@ export const calculateRoundProperty =
     return statistic;
   };
 
+export const calculateWinRange =
+  (round: Round) =>
+  (statistic: Statistic): Statistic => {
+    const winRange = Math.ceil(round.betwin / (round.betLevel * round.coinValue * round.betMultiplier));
+    statistic.winRange[winRange] = (statistic.winRange[winRange] || 0) + 1;
+    return statistic;
+  };
+
 export const countWinningSymbols =
   (round: Round) =>
   (statistic: Statistic): Statistic => {
@@ -142,7 +152,13 @@ export const countMultiplierValues =
   };
 
 export const calculateStatistic = (round: Round) =>
-  compose(calculateCommonProperties(round), calculateRoundProperty(round), countWinningSymbols(round), countMultiplierValues(round));
+  compose(
+    calculateCommonProperties(round),
+    calculateRoundProperty(round),
+    countWinningSymbols(round),
+    countMultiplierValues(round),
+    calculateWinRange(round)
+  );
 
 export const variance = (input: number[]) => {
   const square_error = compose(partialRight(Math.pow, [2]), subtract(__, mean(input)));
