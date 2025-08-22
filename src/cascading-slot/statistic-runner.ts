@@ -5,7 +5,6 @@ import { BoardGenerator } from "sc-slot-board-generator";
 import { calculateStatistic, Round, Statistic } from "./statistic-calculator";
 import { Chance } from "chance";
 import { defaultOdds, commonDefinition } from "./generator-definition";
-import defaultDefinition from "../../lib/default-definition";
 
 export interface BatchOptions {
   numberOfRounds: number;
@@ -15,6 +14,7 @@ export interface BatchOptions {
   multiplierSettings: any;
   modeSettings: any;
   difficulty: any;
+  volatility: any;
   betAmounts: { coinValue: number; betLevel: number }[];
 }
 
@@ -24,18 +24,19 @@ export interface GetStatisticOptions {
   betLevels: number[];
   batchOptions: BatchOptions;
 }
-
+let count = 1;
 const buyFreeSpinSymbols = [0, 1, 2, 3, 4, 5, 6, 7, 8].flatMap((symbol) => Array(7).fill(symbol));
-const getBuyFreeSpinBoard = () => {
+const getBuyFreeSpinBoard = (statistic) => {
   const chance = new Chance();
 
-  return [{ newBoard: chance.shuffle(chance.pickset(buyFreeSpinSymbols, 26).concat([9, 9, 9, 9])), multipliers: [] }];
+  statistic.buyFreeSpins++;
+  return [{ newBoard: chance.shuffle(chance.pickset(buyFreeSpinSymbols, 25).concat([9, 9, 9, 9, 9])), multipliers: [] }];
 };
 
 function spin(calculator: RoundCalculator, statistic: Statistic, round: Round, totalMultiplier = 0) {
-  const buyFreeSpinBoard = round.buyFreeSpins && !round.freeSpin ? getBuyFreeSpinBoard() : undefined;
+  const buyFreeSpinBoard = round.buyFreeSpins && !round.freeSpin ? getBuyFreeSpinBoard(statistic) : undefined;
 
-  calculator.processSpinning(round, totalMultiplier, Number.MAX_VALUE, buyFreeSpinBoard);
+  calculator.processSpinning(round, totalMultiplier, round.betLevel * round.betMultiplier * round.coinValue * 5000, buyFreeSpinBoard);
 
   calculateStatistic(round)(statistic);
 
@@ -63,7 +64,7 @@ function executeFreeSpins(calculator: RoundCalculator, statistic: Statistic, rou
 
     spin(calculator, statistic, freeSpinRound, multiplier);
 
-    if (freeSpinRound.betwin) {
+    if (freeSpinRound.betwin && freeSpinRound.settlementResult.tumbles.length > 0) {
       multiplier += freeSpinRound.multiplier;
     }
 
@@ -83,7 +84,13 @@ function executeFreeSpins(calculator: RoundCalculator, statistic: Statistic, rou
 }
 
 export function spinABatch(options: BatchOptions) {
-  const generator = new BoardGenerator(commonDefinition.boardSettings, options.multiplierSettings, options.modeSettings, options.difficulty);
+  const generator = new BoardGenerator(
+    commonDefinition.boardSettings,
+    options.multiplierSettings,
+    options.modeSettings,
+    options.difficulty,
+    options.volatility
+  );
   const calculator = new RoundCalculator({
     boardGenerator: generator,
     tumbleCalculator: new TumbleCalculator(),
@@ -121,6 +128,8 @@ export function spinABatch(options: BatchOptions) {
     maxWin: 0,
     hitMaxWin: 0,
     aboveThousandWins: 0,
+    winRange: {},
+    buyFreeSpins: 0,
   };
   const betMultiplier = 20;
 
@@ -136,7 +145,7 @@ export function spinABatch(options: BatchOptions) {
       betMultiplier,
       totalAmount: coinValue * betLevel * betMultiplier * 50,
       odds,
-      buyFreeSpins: true,
+      buyFreeSpins: false,
     };
 
     spin(calculator, statistic, round, 0);

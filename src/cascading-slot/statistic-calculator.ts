@@ -41,7 +41,6 @@ export interface Statistic {
   maxWin: number;
   hitMaxWin: number;
   aboveThousandWins: number;
-
   winRange: Record<number, number>;
 
   round: {
@@ -56,6 +55,7 @@ export interface Statistic {
     counts: Record<number, Record<number, number>>;
   };
   cache: any;
+  buyFreeSpins: number;
 }
 
 export const calculateCommonProperties =

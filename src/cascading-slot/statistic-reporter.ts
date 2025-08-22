@@ -1,9 +1,10 @@
 import { GetStatisticOptions, getStatistics } from "./statistic-runner";
-import { commonDefinition } from "./generator-definition";
+import { boardDefinition, commonDefinition } from "./generator-definition";
 import { range, __ } from "ramda";
 import { Difficulty } from "sc-slot-board-generator";
 import { writeFileSync, mkdirSync, existsSync } from "fs";
 import { calculateRTP, countMultipliers, countSymbols } from "./statistic-calculator";
+import { Volatility } from "sc-slot-board-generator/lib/volatility";
 
 function getSymbolHeuristic(multiplierSymbols: number) {
   return {
@@ -23,17 +24,17 @@ function getSymbolHeuristic(multiplierSymbols: number) {
 
 function getNumberOfSymbols(factor: number, multiplierSymbols: number) {
   return {
-    0: 0.17,
-    1: 0.15,
-    2: 0.14,
-    3: 0.125,
-    4: 0.115,
-    5: 0.09,
-    6: 0.07,
-    7: 0.06,
-    8: 0.05,
-    9: 0.02,
-    10: 0.01,
+    0: 118,
+    1: 98,
+    2: 88,
+    3: 73,
+    4: 58,
+    5: 48,
+    6: 38,
+    7: 30,
+    8: 15,
+    9: 10,
+    10: 2,
   };
 }
 
@@ -59,13 +60,10 @@ function getRunnerOptions(
       debug: false,
       difficulty: Difficulty.Easy,
       multiplierSettings: commonDefinition.multiplier,
-      modeSettings: {
-        mode: {
-          [Difficulty.Easy]: numberOfSymbols,
-        },
-      },
+      modeSettings: boardDefinition,
       numberOfRounds: batchSize,
       betAmounts: coinValues.flatMap((coinValue) => betLevels.map((betLevel) => ({ coinValue, betLevel }))),
+      volatility: Volatility.MediumLow,
     },
   };
 }
@@ -82,7 +80,7 @@ function generateReportWithSingleFactor(
   const { statistics } = getStatistics(options);
   const report = calculateRTP(statistics, batchSize);
   const symbols = countSymbols(statistics);
-  const configs = range(0, 11).map((symbol) => options.batchOptions.modeSettings.mode[Difficulty.Easy][symbol]);
+  const configs = range(0, 11).map((symbol) => options.batchOptions.modeSettings[options.batchOptions.volatility].mode[Difficulty.Easy][symbol]);
   const multipliers = countMultipliers(statistics);
 
   return { report, symbols, configs, multipliers };
@@ -124,11 +122,11 @@ function generateReport(
 
 const factor = Number(process.argv[2] || 40);
 const multiplier = Number(process.argv[3] || 1);
-const batchSize = Number(process.argv[4] || 3000);
+const batchSize = Number(process.argv[4] || 50000);
 const times = Number(process.argv[5] || 10);
 const singleFactor = process.argv[6] === "true";
-const betCoins = [0.01, 0.05, 0.1, 0.5];
-const betLevels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const betCoins = [0.01];
+const betLevels = [1];
 
 !existsSync("reports") && mkdirSync("reports");
 generateReport(factor, multiplier, batchSize, times, betCoins, betLevels, true, Number(process.argv[2] || 1));

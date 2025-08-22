@@ -11,8 +11,8 @@
   "dependencies": {
     "chance": "^1.1.8",
     "ramda": "^0.28.0",
-    "sc-cascading-slot-base": "1.1.2-beta.10",
-    "sc-slot-board-generator": "1.0.3-beta.4"
+    "sc-cascading-slot-base": "1.2.1-beta.16",
+    "sc-slot-board-generator": "1.1.1-beta.2"
   },
   "devDependencies": {
     "@types/chance": "^1.1.3",
