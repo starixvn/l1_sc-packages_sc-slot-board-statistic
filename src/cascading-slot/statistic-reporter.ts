@@ -3,7 +3,7 @@ import { boardDefinition, commonDefinition } from "./generator-definition";
 import { range, __ } from "ramda";
 import { Difficulty } from "sc-slot-board-generator";
 import { writeFileSync, mkdirSync, existsSync } from "fs";
-import { calculateRTP, countMultipliers, countSymbols } from "./statistic-calculator";
+import { calculateRTP, countMultipliers, countSymbols, countBuyFreeSpinsExtraSpins } from "./statistic-calculator";
 import { Volatility } from "sc-slot-board-generator/lib/volatility";
 
 function getSymbolHeuristic(multiplierSymbols: number) {
@@ -58,12 +58,12 @@ function getRunnerOptions(
       betLevel: 5,
       coinValue: 0.1,
       debug: false,
-      difficulty: Difficulty.Easy,
+      difficulty: Difficulty.Easy, // Not use anymore
       multiplierSettings: commonDefinition.multiplier,
-      modeSettings: boardDefinition,
+      modeSettings: {},
       numberOfRounds: batchSize,
       betAmounts: coinValues.flatMap((coinValue) => betLevels.map((betLevel) => ({ coinValue, betLevel }))),
-      volatility: Volatility.MediumLow,
+      volatility: Volatility.MediumLow, // Volatility.VeryHigh
     },
   };
 }
@@ -74,16 +74,26 @@ function generateReportWithSingleFactor(
   batchSize: number = 1000,
   times: number = 2,
   coinValues = [0.1],
-  betLevels = [5]
+  betLevels = [1]
 ) {
   const options = getRunnerOptions(factor, multiplierSymbols, batchSize, times, coinValues, betLevels);
   const { statistics } = getStatistics(options);
-  const report = calculateRTP(statistics, batchSize);
+  const totalRounds = statistics.reduce((acc, statistic) => acc + statistic.totalRounds, 0);
+  const report = calculateRTP(statistics, totalRounds);
   const symbols = countSymbols(statistics);
-  const configs = range(0, 11).map((symbol) => options.batchOptions.modeSettings[options.batchOptions.volatility].mode[Difficulty.Easy][symbol]);
+  const configs = options.batchOptions.modeSettings[options.batchOptions.volatility];
   const multipliers = countMultipliers(statistics);
+  const buyFreeSpinsExtraSpins = countBuyFreeSpinsExtraSpins(statistics);
+  const totalPayout = statistics.reduce((acc, statistic) => acc + statistic.totalPayout, 0);
+  const totalBet = statistics.reduce((acc, statistic) => acc + statistic.totalBetAmount, 0);
 
-  return { report, symbols, configs, multipliers };
+  const reportWithTotals = {
+    ...report,
+    totalPayout,
+    totalBet,
+  };
+
+  return { report: reportWithTotals, symbols, configs, multipliers, buyFreeSpinsExtraSpins };
 }
 
 function generateReport(
@@ -121,11 +131,11 @@ function generateReport(
 }
 
 const factor = Number(process.argv[2] || 40);
-const multiplier = Number(process.argv[3] || 1);
-const batchSize = Number(process.argv[4] || 50000);
+const multiplier = Number(process.argv[3] || 10);
+const batchSize = Number(process.argv[4] || 1000);
 const times = Number(process.argv[5] || 10);
 const singleFactor = process.argv[6] === "true";
-const betCoins = [0.01];
+const betCoins = [0.05, 0.1, 0.25];
 const betLevels = [1];
 
 !existsSync("reports") && mkdirSync("reports");

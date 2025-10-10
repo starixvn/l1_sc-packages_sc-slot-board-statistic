@@ -76,6 +76,8 @@ function getReportSummary(reports) {
   const multiplierValues = reports.map((r) => r.data.report.multiplierRatio);
   const freeSpinsValues = reports.map((r) => r.data.report.freeSpinsRatio);
   const hitMaxWinValues = reports.map((r) => r.data.report.hitMaxWin);
+  const totalPayoutValues = reports.map((r) => r.data.report.totalPayout || 0);
+  const totalBetValues = reports.map((r) => r.data.report.totalBet || 0);
 
   return {
     totalReports: reports.length,
@@ -112,6 +114,18 @@ function getReportSummary(reports) {
       min: Math.min(...hitMaxWinValues),
       max: Math.max(...hitMaxWinValues),
       avg: hitMaxWinValues.reduce((sum, val) => sum + val, 0) / hitMaxWinValues.length,
+    },
+    totalPayoutStats: {
+      min: Math.min(...totalPayoutValues),
+      max: Math.max(...totalPayoutValues),
+      avg: totalPayoutValues.reduce((sum, val) => sum + val, 0) / totalPayoutValues.length,
+      total: totalPayoutValues.reduce((sum, val) => sum + val, 0),
+    },
+    totalBetStats: {
+      min: Math.min(...totalBetValues),
+      max: Math.max(...totalBetValues),
+      avg: totalBetValues.reduce((sum, val) => sum + val, 0) / totalBetValues.length,
+      total: totalBetValues.reduce((sum, val) => sum + val, 0),
     },
   };
 }

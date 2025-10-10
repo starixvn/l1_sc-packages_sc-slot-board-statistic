@@ -1,7 +1,7 @@
 import RoundCalculator from "sc-cascading-slot-base/src/board/round-calculator";
 import TumbleCalculator from "sc-cascading-slot-base/src/board/tumble-calculator";
 import { prop } from "ramda";
-import { BoardGenerator } from "sc-slot-board-generator";
+import { CascadingBoardGenerator } from "sc-cascading-slot-base/src/board";
 import { calculateStatistic, Round, Statistic } from "./statistic-calculator";
 import { Chance } from "chance";
 import { defaultOdds, commonDefinition } from "./generator-definition";
@@ -30,7 +30,7 @@ const getBuyFreeSpinBoard = (statistic) => {
   const chance = new Chance();
 
   statistic.buyFreeSpins++;
-  return [{ newBoard: chance.shuffle(chance.pickset(buyFreeSpinSymbols, 25).concat([9, 9, 9, 9, 9])), multipliers: [] }];
+  return [{ newBoard: chance.shuffle(chance.pickset(buyFreeSpinSymbols, 26).concat([9, 9, 9, 9])), multipliers: [] }];
 };
 
 function spin(calculator: RoundCalculator, statistic: Statistic, round: Round, totalMultiplier = 0) {
@@ -43,7 +43,16 @@ function spin(calculator: RoundCalculator, statistic: Statistic, round: Round, t
   return round;
 }
 
-function executeFreeSpins(calculator: RoundCalculator, statistic: Statistic, round: Round, totalMultiplier = 0, spins = 0, debug = false) {
+function executeFreeSpins(
+  calculator: RoundCalculator,
+  statistic: Statistic,
+  round: Round,
+  totalMultiplier = 0,
+  spins = 0,
+  debug = false,
+  isFromBuyFreeSpins = false,
+  totalExtraSpinsWon = 0
+) {
   const rounds = [];
   let additionFreeSpins = 0;
   let multiplier = totalMultiplier;
@@ -64,7 +73,7 @@ function executeFreeSpins(calculator: RoundCalculator, statistic: Statistic, rou
 
     spin(calculator, statistic, freeSpinRound, multiplier);
 
-    if (freeSpinRound.betwin && freeSpinRound.settlementResult.tumbles.length > 0) {
+    if (freeSpinRound.betwin && freeSpinRound.settlementResult.tumbles.length > 1) {
       multiplier += freeSpinRound.multiplier;
     }
 
@@ -79,17 +88,36 @@ function executeFreeSpins(calculator: RoundCalculator, statistic: Statistic, rou
   if (additionFreeSpins) {
     debug && console.log(`You won addition free spins: ${additionFreeSpins}`);
 
-    executeFreeSpins(calculator, statistic, round, multiplier, additionFreeSpins, debug);
+    // Track total extra free spins if this is from buy free spins
+    if (isFromBuyFreeSpins) {
+      totalExtraSpinsWon += additionFreeSpins;
+    }
+
+    executeFreeSpins(calculator, statistic, round, multiplier, additionFreeSpins, debug, isFromBuyFreeSpins, totalExtraSpinsWon);
+  } else if (isFromBuyFreeSpins && totalExtraSpinsWon > 0) {
+    // This is the end of a buy free spin session, record the total extra spins won
+    if (statistic.buyFreeSpinsExtraSpins[totalExtraSpinsWon]) {
+      statistic.buyFreeSpinsExtraSpins[totalExtraSpinsWon]++;
+    } else {
+      statistic.buyFreeSpinsExtraSpins[totalExtraSpinsWon] = 1;
+    }
   }
 }
 
 export function spinABatch(options: BatchOptions) {
-  const generator = new BoardGenerator(
-    commonDefinition.boardSettings,
-    options.multiplierSettings,
-    options.modeSettings,
-    options.difficulty,
-    options.volatility
+  const generator = new CascadingBoardGenerator(
+    null,
+    {
+      gameConfigs: {
+        cascadingSlotsConfig: {
+          multiplierBonus: {
+            ...options.multiplierSettings,
+          },
+          volatility: options.volatility,
+        },
+      },
+    },
+    commonDefinition.boardSettings
   );
   const calculator = new RoundCalculator({
     boardGenerator: generator,
@@ -108,6 +136,7 @@ export function spinABatch(options: BatchOptions) {
     totalPayout: 0,
     totalPayoutForFreeSpins: 0,
     winFreeSpins: 0,
+    winExtraFreeSpins: 0,
     totalFreeSpins: 0,
     totalAdditionFreeSpins: 0,
     totalMultipliers: 0,
@@ -130,22 +159,23 @@ export function spinABatch(options: BatchOptions) {
     aboveThousandWins: 0,
     winRange: {},
     buyFreeSpins: 0,
+    buyFreeSpinsExtraSpins: {},
   };
   const betMultiplier = 20;
-
   for (let i = 0; i < options.numberOfRounds; i++) {
     options.debug && console.log(`Running ${i}/${options.numberOfRounds - 1}`);
     const chance = new Chance();
     const { coinValue, betLevel } = chance.pickone(options.betAmounts);
+    const buyFreeSpins = true; // Test Buy Free Spins
 
     const round: Round = {
       id: i,
       coinValue,
       betLevel,
       betMultiplier,
-      totalAmount: coinValue * betLevel * betMultiplier * 50,
+      totalAmount: coinValue * betLevel * betMultiplier * (buyFreeSpins ? 50 : 1),
       odds,
-      buyFreeSpins: false,
+      buyFreeSpins,
     };
 
     spin(calculator, statistic, round, 0);
@@ -157,7 +187,7 @@ export function spinABatch(options: BatchOptions) {
     if (freeSpins) {
       options.debug && console.log(`You won free spins: ${freeSpins}`);
 
-      executeFreeSpins(calculator, statistic, { ...round, totalAmount: 0, buyFreeSpins: false }, 0, freeSpins, options.debug);
+      executeFreeSpins(calculator, statistic, { ...round, totalAmount: 0, buyFreeSpins: false }, 0, freeSpins, options.debug, round.buyFreeSpins, 0);
     }
   }
 
