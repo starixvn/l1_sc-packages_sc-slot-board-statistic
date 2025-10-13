@@ -8,7 +8,59 @@ This module provides functionality to read and analyze all JSON report files fro
 - `read-reports.ts` - TypeScript version with type definitions
 - `example-usage.js` - Example script showing how to use the report reader
 
-## Usage
+## Generating Reports
+
+### Running the Cascading Slot Simulator
+
+Use the `cascading-slot` script to generate statistical reports:
+
+```bash
+npm run cascading-slot [factor] [multiplier] [batchSize] [times] [singleFactor] [volatility] [buyFreeSpins]
+```
+
+### Parameters
+
+1. **factor** (default: 40) - Maximum factor value
+2. **multiplier** (default: 10) - Multiplier symbols count
+3. **batchSize** (default: 1000) - Number of rounds per batch
+4. **times** (default: 10) - Number of times to run the batch
+5. **singleFactor** (default: false) - Use "true" to run with a single factor
+6. **volatility** (default: "MediumLow") - Options: "MediumLow" or "VeryHigh"
+7. **buyFreeSpins** (default: false) - Use "true" to enable buy free spins feature
+
+### Examples
+
+#### Run with default settings
+
+```bash
+npm run cascading-slot
+```
+
+#### Run with VeryHigh volatility and buyFreeSpins enabled
+
+```bash
+npm run cascading-slot 40 10 1000 10 true VeryHigh true
+```
+
+#### Run with MediumLow volatility and buyFreeSpins enabled
+
+```bash
+npm run cascading-slot 40 10 1000 10 true MediumLow true
+```
+
+#### Run with VeryHigh volatility and buyFreeSpins disabled
+
+```bash
+npm run cascading-slot 40 10 1000 10 true VeryHigh false
+```
+
+#### Custom batch size with 50 iterations
+
+```bash
+npm run cascading-slot 40 10 5000 50 true MediumLow false
+```
+
+## Reading Reports
 
 ### Basic Usage
 

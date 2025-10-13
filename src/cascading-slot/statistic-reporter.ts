@@ -46,7 +46,9 @@ function getRunnerOptions(
   batchSize: number = 1000,
   times: number = 2,
   coinValues = [0.1],
-  betLevels = [5]
+  betLevels = [5],
+  volatility: Volatility = Volatility.MediumLow,
+  buyFreeSpins: boolean = false
 ): GetStatisticOptions {
   const numberOfSymbols = getNumberOfSymbols(factor, multiplierSymbols);
 
@@ -63,7 +65,8 @@ function getRunnerOptions(
       modeSettings: {},
       numberOfRounds: batchSize,
       betAmounts: coinValues.flatMap((coinValue) => betLevels.map((betLevel) => ({ coinValue, betLevel }))),
-      volatility: Volatility.MediumLow, // Volatility.VeryHigh
+      volatility,
+      buyFreeSpins,
     },
   };
 }
@@ -74,9 +77,11 @@ function generateReportWithSingleFactor(
   batchSize: number = 1000,
   times: number = 2,
   coinValues = [0.1],
-  betLevels = [1]
+  betLevels = [1],
+  volatility: Volatility = Volatility.MediumLow,
+  buyFreeSpins: boolean = false
 ) {
-  const options = getRunnerOptions(factor, multiplierSymbols, batchSize, times, coinValues, betLevels);
+  const options = getRunnerOptions(factor, multiplierSymbols, batchSize, times, coinValues, betLevels, volatility, buyFreeSpins);
   const { statistics } = getStatistics(options);
   const totalRounds = statistics.reduce((acc, statistic) => acc + statistic.totalRounds, 0);
   const report = calculateRTP(statistics, totalRounds);
@@ -104,18 +109,20 @@ function generateReport(
   betCoins = [0.1],
   betLevels = [5],
   singleFactor: boolean = false,
-  runner: number = 1
+  runner: number = 1,
+  volatility: Volatility = Volatility.MediumLow,
+  buyFreeSpins: boolean = false
 ) {
-  console.log({ maximumFactor, multiplierSymbols, batchSize, times });
+  console.log({ maximumFactor, multiplierSymbols, batchSize, times, volatility, buyFreeSpins });
   const result = [];
 
   if (singleFactor) {
-    const data = generateReportWithSingleFactor(maximumFactor, multiplierSymbols, batchSize, times, betCoins, betLevels);
+    const data = generateReportWithSingleFactor(maximumFactor, multiplierSymbols, batchSize, times, betCoins, betLevels, volatility, buyFreeSpins);
 
     result.push(data);
   } else {
     for (let factor = 12; factor <= maximumFactor; factor++) {
-      const data = generateReportWithSingleFactor(factor, multiplierSymbols, batchSize, times, betCoins, betLevels);
+      const data = generateReportWithSingleFactor(factor, multiplierSymbols, batchSize, times, betCoins, betLevels, volatility, buyFreeSpins);
 
       result.push(data);
 
@@ -130,13 +137,27 @@ function generateReport(
   return result;
 }
 
-const factor = Number(process.argv[2] || 40);
-const multiplier = Number(process.argv[3] || 10);
-const batchSize = Number(process.argv[4] || 1000);
-const times = Number(process.argv[5] || 10);
-const singleFactor = process.argv[6] === "true";
+const ARG_FACTOR = 2;
+const ARG_MULTIPLIER = 3;
+const ARG_BATCH_SIZE = 4;
+const ARG_TIMES = 5;
+const ARG_SINGLE_FACTOR = 6;
+const ARG_VOLATILITY = 7;
+const ARG_BUY_FREE_SPINS = 8;
+
+const factor = Number(process.argv[ARG_FACTOR] || 40);
+const multiplier = Number(process.argv[ARG_MULTIPLIER] || 10);
+const batchSize = Number(process.argv[ARG_BATCH_SIZE] || 1000);
+const times = Number(process.argv[ARG_TIMES] || 10);
+const singleFactor = process.argv[ARG_SINGLE_FACTOR] === "true";
+
+const volatilityArg = process.argv[ARG_VOLATILITY] || "MediumLow";
+const volatility = volatilityArg === "VeryHigh" ? Volatility.VeryHigh : Volatility.MediumLow;
+
+const buyFreeSpins = process.argv[ARG_BUY_FREE_SPINS] === "true";
+
 const betCoins = [0.05, 0.1, 0.25];
 const betLevels = [1];
 
 !existsSync("reports") && mkdirSync("reports");
-generateReport(factor, multiplier, batchSize, times, betCoins, betLevels, true, Number(process.argv[2] || 1));
+generateReport(factor, multiplier, batchSize, times, betCoins, betLevels, true, Number(process.argv[ARG_FACTOR] || 1), volatility, buyFreeSpins);

@@ -16,6 +16,7 @@ export interface BatchOptions {
   difficulty: any;
   volatility: any;
   betAmounts: { coinValue: number; betLevel: number }[];
+  buyFreeSpins: boolean;
 }
 
 export interface GetStatisticOptions {
@@ -166,7 +167,7 @@ export function spinABatch(options: BatchOptions) {
     options.debug && console.log(`Running ${i}/${options.numberOfRounds - 1}`);
     const chance = new Chance();
     const { coinValue, betLevel } = chance.pickone(options.betAmounts);
-    const buyFreeSpins = true; // Test Buy Free Spins
+    const buyFreeSpins = options.buyFreeSpins;
 
     const round: Round = {
       id: i,
