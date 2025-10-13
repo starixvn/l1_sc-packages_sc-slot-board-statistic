@@ -1,0 +1,55 @@
+{
+  "reportInfo": {
+    "totalReports": 1,
+    "reportFile": "report-40-1.json",
+    "totalRounds": 16939,
+    "totalBet": "13452.00",
+    "totalPayout": "10685.10"
+  },
+  "rtpAnalysis": {
+    "totalRTP": "79.4157%",
+    "baseGameRTP": "68.3200%",
+    "bonusModeRTP": "11.1114%",
+    "rtpDeviation": "18.6054%",
+    "rtpRange": {
+      "min": "59.4172%",
+      "max": "108.2085%"
+    }
+  },
+  "volatility": {
+    "rating": "Very High",
+    "coefficientOfVariation": "0.234278",
+    "standardDeviation": "0.186054"
+  },
+  "maxWinAnalysis": {
+    "maxWin": "72.50x",
+    "maxWinFrequency": "0.0919%",
+    "maxWinPerRound": "1 in 1088"
+  },
+  "frequencyAnalysis": {
+    "hitFrequency": "30.5834%",
+    "hitRate": "1 in 3.27",
+    "freeSpinTriggerFrequency": "0.2582%",
+    "freeSpinTriggerRate": "1 in 387.35",
+    "extraFreeSpinFrequency": "0.0694%",
+    "multiplierFrequency": "34.0683%",
+    "win100xBetFrequency": "0.0000%",
+    "win100xBetRate": "1 in N/A"
+  },
+  "bonusFeatures": {
+    "totalBuyFreeSpins": 0,
+    "buyFreeSpinsPercentage": "0.0000%"
+  },
+  "freeSpinsEfficiency": {
+    "baseGameHitFrequency": "29.9600%",
+    "baseGameHitRate": "1 in 3.34",
+    "freeSpinHitFrequency": "38.2979%",
+    "freeSpinHitRate": "1 in 2.61",
+    "efficiencyRatio": "1.28x",
+    "avgBaseGameWin": "1.8381",
+    "avgFreeSpinWin": "3.1802",
+    "payoutMultiplier": "1.73x",
+    "totalBaseGameRounds": 5000,
+    "totalFreeSpinRounds": 470
+  }
+}

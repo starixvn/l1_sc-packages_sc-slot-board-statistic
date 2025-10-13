@@ -60,6 +60,135 @@ npm run cascading-slot 40 10 1000 10 true VeryHigh false
 npm run cascading-slot 40 10 5000 50 true MediumLow false
 ```
 
+## Analyzing Reports
+
+### Comprehensive Statistical Analysis
+
+Use the `analyze-reports` command to generate a comprehensive statistical analysis of your reports:
+
+```bash
+npm run analyze-reports
+```
+
+This command will:
+
+- Read all report files from the `reports` directory
+- Generate comprehensive statistics including:
+  - **RTP Analysis**: Total RTP, Base Game RTP, Bonus Mode RTP, RTP Deviation, and RTP Range
+  - **Volatility**: Volatility rating, coefficient of variation, and standard deviation
+  - **Max Win**: Maximum win multiplier, frequency, and probability
+  - **Frequency Analysis**: Hit frequency, feature hit frequency, multiplier frequency, win 100x bet frequency
+  - **Bonus Features**: Buy free spins statistics
+- Display a formatted report in the console
+- Save the analysis to `analysis-report.json`
+
+### Analysis Output
+
+The analysis includes:
+
+#### 📊 Report Information
+
+- Total rounds simulated
+- Total bet amount
+- Total payout amount
+
+#### 💰 RTP Analysis
+
+- **Total RTP**: Overall return to player percentage
+- **Base Game RTP**: RTP from base game wins (excluding free spins)
+- **Bonus Mode RTP**: RTP from free spins/bonus rounds
+- **RTP Deviation**: Standard deviation of RTP across batches
+- **RTP Range**: Minimum and maximum RTP observed
+
+#### 📈 Volatility
+
+- **Volatility Rating**: Very Low, Low, Medium, High, or Very High
+- **Coefficient of Variation**: Statistical measure of volatility
+- **Standard Deviation**: RTP standard deviation
+
+#### 🎯 Max Win
+
+- **Max Win**: Maximum win multiplier achieved
+- **Max Win Frequency**: How often the max win occurs
+- **Max Win Rate**: Average rounds between max wins
+
+#### 🎲 Frequency Analysis
+
+- **Hit Frequency**: Percentage of rounds with any win
+- **Feature Hit Frequency**: How often free spins are triggered
+- **Extra Free Spin Frequency**: How often additional free spins are won during bonus rounds
+- **Multiplier Frequency**: How often multipliers appear
+- **Win 100x Bet Frequency**: How often wins exceed 100x the bet
+
+#### 🎁 Bonus Features
+
+- **Total Buy Free Spins**: Number of buy free spins triggered
+- **Buy Free Spins Rate**: Percentage of rounds using buy feature
+
+#### 🚀 Free Spins Efficiency
+
+- **Base Game Rounds**: Total base game spins
+- **Free Spins Rounds**: Total free spin rounds played
+- **Base Game Hit Frequency**: Percentage of base game spins that win
+- **Base Game Hit Rate**: Average rounds between base game wins
+- **Free Spins Hit Frequency**: Percentage of free spin rounds that win
+- **Free Spins Hit Rate**: Average rounds between free spin wins
+- **Efficiency Ratio**: How much more likely free spins are to win vs base game (e.g., 1.28x means 28% more likely)
+- **Average Base Game Win**: Average payout per base game round
+- **Average Free Spin Win**: Average payout per free spin round
+- **Payout Multiplier**: How much more profitable each free spin is vs base game (e.g., 1.73x means 73% more)
+
+### Example Output
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║           CASCADING SLOT STATISTICAL ANALYSIS               ║
+╚══════════════════════════════════════════════════════════════╝
+
+📊 REPORT INFORMATION
+─────────────────────────────────────────────────────────────
+Report File:    report-40-1.json
+Total Rounds:   1,374,516
+Total Bet:      1327100.00
+Total Payout:   1281064.10
+
+💰 RTP ANALYSIS (Return to Player)
+─────────────────────────────────────────────────────────────
+Total RTP:      79.4157%
+Base Game RTP:  68.3200%
+Bonus Mode RTP: 11.1114%
+RTP Deviation:  18.6054%
+RTP Range:      59.4172% - 108.2085%
+
+📈 VOLATILITY
+─────────────────────────────────────────────────────────────
+Volatility:     Very High
+Coefficient:    0.234278
+Std Deviation:  0.186054
+
+🎯 MAX WIN
+─────────────────────────────────────────────────────────────
+Max Win:        72.50x
+Max Win Freq:   0.0919%
+Max Win Rate:   1 in 1088 rounds
+
+🚀 FREE SPINS EFFICIENCY
+─────────────────────────────────────────────────────────────
+Base Game Rounds:       5,000
+Free Spins Rounds:      470
+
+Base Game Hit Freq:     29.9600%
+Base Game Hit Rate:     1 in 3.34 rounds
+Free Spins Hit Freq:    38.2979%
+Free Spins Hit Rate:    1 in 2.61 rounds
+Efficiency Ratio:       1.28x
+
+Avg Base Game Win:      1.8381
+Avg Free Spin Win:      3.1802
+Payout Multiplier:      1.73x
+...
+```
+
 ## Reading Reports
 
 ### Basic Usage

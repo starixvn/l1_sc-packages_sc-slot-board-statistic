@@ -161,6 +161,11 @@ export function spinABatch(options: BatchOptions) {
     winRange: {},
     buyFreeSpins: 0,
     buyFreeSpinsExtraSpins: {},
+    baseGameRounds: 0,
+    baseGameWins: 0,
+    baseGamePayout: 0,
+    freeSpinRounds: 0,
+    freeSpinWins: 0,
   };
   const betMultiplier = 20;
   for (let i = 0; i < options.numberOfRounds; i++) {
